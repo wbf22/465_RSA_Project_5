@@ -10,20 +10,24 @@ import static org.junit.Assert.*;
 public class RSA {
     private static SecureRandom random = new SecureRandom();
 
-    private static BigInteger g = BigInteger.valueOf(5);
-    private static BigInteger a = new BigInteger("516415537138565400654460647684754583949691111146492085276709191698808284105442818124657845793813991299243458567271266633566515386293258242513818707961312840");
-    private static BigInteger p = new BigInteger("376136317015817541134565651197938274527949467832977278939335518271565236964492889587764292646346828242549008563838449011089273599825220180984524321167802755");
 
     //Main methods
     @Test
     public void generateParameters() {
-        BigInteger q = PrimeGeneration.getPrime();
-        BigInteger p = PrimeGeneration.getPrime();
-
-        System.out.println("q");
-        System.out.println(q);
-        System.out.println("p");
-        System.out.println(p);
+        List<BigInteger> pq = PrimeGeneration.getPQPair();
+        BigInteger p = pq.get(0);
+        BigInteger q = pq.get(0);
+        BigInteger phiN = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
+        System.out.println("******P******");
+        System.out.println(pq.get(0));
+        System.out.println("******Q******");
+        System.out.println(pq.get(1));
+        System.out.println("******N******");
+        System.out.println(p.multiply(q));
+        System.out.println("******PhiN******");
+        System.out.println(phiN);
+        System.out.println("******E******");
+        System.out.println(new BigInteger("65537"));
 
 
 
