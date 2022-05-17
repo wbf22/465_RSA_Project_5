@@ -13,60 +13,119 @@ public class RSA {
 
     //Main methods
     @Test
+    public void encrypt() {
+        BigInteger m = new BigInteger("213125769610681219222423285489127921180276917615238827344623759847555851056051461716385716076387700789559362056775918847885906524280601834392438907503180701598362345638784202336522350723217891862697530875779151405616399169080437548119138189700127503594687765637091675497307706824937882405139844117736268310066");
+        BigInteger n = new BigInteger("338616656331092895553138513209827192502797990587740050337702210386724049267043356830602442760300727369576346577281872964842407008451014978418132547574509132789599139727667782724013154907562635130134530328217753036660010175451255469353518625186023423677500149578355784081300929429465468988495421439510560741181");
+        BigInteger e = new BigInteger("65537");
+        BigInteger c = gToTheXModP(m, e, n );
+
+        System.out.println("******C******");
+        System.out.println(c);
+        System.out.println();
+    }
+
+    @Test
+    public void decrypt() {
+        BigInteger c = new BigInteger("9673256701314478651367290736504569435820344301256587070567293557114073470334597168208333603199215500416859816371351098483783174614471878950311612874309189824707472663202606079889020342571927876702628073566079498576248370159810388097504010493924469628281502021150449915424142277552620232173373901668219440133");
+        BigInteger n = new BigInteger("521217552844375778228191317260279098537971845010655897752314463265844541848164910052844041560207298098262766290169405074169022978010895678793168335315620006680112429542462118279461910801424757380684629444138264424429081056406037124357055002924409344767312929611189346910045265970489442059681697803132009606201");
+        BigInteger d = new BigInteger("309929475477139998436800824475228900773986645712578548536058938210018185083586165750024143607447371818809222306909100443114070303081993448015163495845853638111865354836741283395155682891325664648401874835765912530787515014188370192718124291130504602044107735540434261723570004003062239817788897372572070497193");
+        BigInteger m = gToTheXModP(c, d, n );
+
+        System.out.println("******M******");
+        System.out.println(m);
+        System.out.println();
+    }
+
+    @Test
     public void generateParameters() {
         List<BigInteger> pq = PrimeGeneration.getPQPair();
         BigInteger p = pq.get(0);
-        BigInteger q = pq.get(0);
+        BigInteger q = pq.get(1);
+        BigInteger e = new BigInteger("65537");
+        BigInteger n = p.multiply(q);
         BigInteger phiN = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
+
+
+        assertEquals(BigInteger.ONE, PrimeGeneration.GCD(phiN, new BigInteger("65537")).get(0));
+        assertTrue(p.testBit(512));
+        assertTrue(q.testBit(512));
+
+        BigInteger d = PrimeGeneration.GCD(e, phiN).get(1);
+        while (d.compareTo(BigInteger.ZERO) < 0) {
+            d = d.add(phiN);
+        }
+
+        assertEquals(BigInteger.ONE, e.multiply(d).mod(phiN));
+
+        for (int i = 0; i < 50; i++) {
+            BigInteger m = BigInteger.probablePrime(512, random);
+            if (n.compareTo(m) > 0) {
+                assertEquals(m, gToTheXModP(gToTheXModP(m, e, n), d, n));
+            }
+        }
+
+
         System.out.println("******P******");
-        System.out.println(pq.get(0));
+        System.out.println(p);
         System.out.println("******Q******");
-        System.out.println(pq.get(1));
+        System.out.println(q);
         System.out.println("******N******");
-        System.out.println(p.multiply(q));
+        System.out.println(n);
         System.out.println("******PhiN******");
         System.out.println(phiN);
         System.out.println("******E******");
-        System.out.println(new BigInteger("65537"));
-
-
+        System.out.println(e);
+        System.out.println("******D******");
+        System.out.println(d);
+        System.out.println();
 
     }
 
 
     //unit tests
     @Test
-    public void getPQPair() {
+    public void getPQPairAndD() {
         List<BigInteger> pq = PrimeGeneration.getPQPair();
         BigInteger p = pq.get(0);
         BigInteger q = pq.get(0);
+        BigInteger e = new BigInteger("65537");
         BigInteger phiN = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
-        System.out.println("******P******");
-        System.out.println(pq.get(0));
-        System.out.println("******Q******");
-        System.out.println(pq.get(1));
-        System.out.println("******N******");
-        System.out.println(p.multiply(q));
-        System.out.println("******PhiN******");
-        System.out.println(phiN);
-        System.out.println("******E******");
-        System.out.println(new BigInteger("65537"));
 
 
         assertEquals(BigInteger.ONE, PrimeGeneration.GCD(phiN, new BigInteger("65537")).get(0));
         assertTrue(p.testBit(512));
         assertTrue(q.testBit(512));
+
+        System.out.println("******P******");
+        System.out.println(p);
+        System.out.println("******Q******");
+        System.out.println(q);
+        System.out.println("******N******");
+        System.out.println(p.multiply(q));
+        System.out.println("******PhiN******");
+        System.out.println(phiN);
+        System.out.println("******E******");
+        System.out.println(e);
+
+        BigInteger d = PrimeGeneration.GCD(e, phiN).get(1);
+        while (d.compareTo(BigInteger.ZERO) < 0) {
+            d = d.add(phiN);
+        }
+
+
+        assertEquals(BigInteger.ONE, e.multiply(d).mod(phiN));
+
+        System.out.println("******D******");
+        System.out.println(d);
+        System.out.println();
+
     }
 
     @Test
     public void test() {
-//        BigInteger p = PrimeGeneration.getPrimeWithHighestBitSet();
-        BigInteger q = new BigInteger("340082798928912883206524389920770239396654218957311617020958100775309094911208014747882665097860838444680411029770155963359701126622506390645176854935535544482723472059080926466283351954099437835142725874844724526579238648790585381332874813469854787189117765136321319577347655309945168840146165001827996811089");
-//        System.out.println(p.compareTo(q));
-        System.out.println(q.bitLength());
-        System.out.println(q);
-        List<Integer> binary = PrimeGeneration.asBinary(q);
-        System.out.println(binary);
+        BigInteger m = new BigInteger("213125769610681219222423285489127921180276917615238827344623759847555851056051461716385716076387700789559362056775918847885906524280601834392438907503180701598362345638784202336522350723217891862697530875779151405616399169080437548119138189700127503594687765637091675497307706824937882405139844117736268310066");
+        BigInteger n = new BigInteger("338616656331092895553138513209827192502797990587740050337702210386724049267043356830602442760300727369576346577281872964842407008451014978418132547574509132789599139727667782724013154907562635130134530328217753036660010175451255469353518625186023423677500149578355784081300929429465468988495421439510560741181");
+        System.out.println(m.compareTo(n) < 0);
     }
 
 

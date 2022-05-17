@@ -12,7 +12,7 @@ public class PrimeGeneration {
     public static List<BigInteger> getPQPair() {
         BigInteger p = getPrimeWithHighestBitSet();
         BigInteger q = getPrimeWithHighestBitSet();
-        while (!isRelativePrime(q.subtract(BigInteger.ONE).multiply(p.subtract(BigInteger.ONE)), new BigInteger("65537")) ) {
+        while (!isRelativePrime(q.subtract(BigInteger.ONE).multiply(p.subtract(BigInteger.ONE)), new BigInteger("65537")) || p.compareTo(q) == 0) {
             p = getPrimeWithHighestBitSet();
             q = getPrimeWithHighestBitSet();
             System.out.println("Phi N not Relative to 65537");
